@@ -5,8 +5,13 @@ app = Flask(__name__)
 
 STUDENTS = []
 
+BOOKS = [
+    {"id": 1, "title": "Clean Code", "author": "R. Martin"},
+    {"id": 2, "title": "Pragmatic Programmer", "author": "D. Thomas"},
+    {"id": 3, "title": "Python Basics", "author": "John Smith"},
+]
 
-# Bài 1
+
 @app.route("/")
 def index():
     return {"message": "Hello, API!"}
@@ -17,10 +22,12 @@ def index():
 def health():
     return jsonify({"status": "ok"}), 200
 
+
 @app.route("/echo", methods=["POST"])
 def echo():
     data = request.get_json(silent=True) or {}
     return jsonify({"you_sent": data}), 200
+
 
 # Bài 3
 @app.route("/students", methods=["POST"])
@@ -29,7 +36,6 @@ def create_student():
 
     name = body.get("name")
 
-    # Kiểm tra name
     if not name:
         return jsonify({"error": "name là bắt buộc"}), 400
 
@@ -42,6 +48,28 @@ def create_student():
     STUDENTS.append(student)
 
     return jsonify(student), 201
+
+
+# Bài 4 - Path parameter
+@app.route("/books/<int:book_id>", methods=["GET"])
+def get_book(book_id):
+    book = next((b for b in BOOKS if b["id"] == book_id), None)
+
+    if book is None:
+        return jsonify({"error": "not found"}), 404
+
+    return jsonify(book), 200
+
+
+# Bài 4 - Query string
+@app.route("/books", methods=["GET"])
+def list_books():
+    limit = int(request.args.get("limit", 20))
+    q = request.args.get("q", "").strip().lower()
+
+    items = [b for b in BOOKS if q in b["title"].lower()]
+
+    return jsonify(items[:limit]), 200
 
 
 if __name__ == "__main__":
