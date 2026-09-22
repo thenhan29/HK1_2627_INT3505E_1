@@ -72,5 +72,33 @@ def list_books():
     return jsonify(items[:limit]), 200
 
 
+# Bài 5 - HTTP Status Codes
+
+ORDERS = {
+    1: {"id": 1, "status": "pending"},
+    2: {"id": 2, "status": "shipped"},
+    3: {"id": 3, "status": "delivered"},
+}
+
+
+@app.route("/orders/<int:order_id>", methods=["DELETE"])
+def delete_order(order_id):
+    order = ORDERS.get(order_id)
+
+    # 404 - không tìm thấy order
+    if order is None:
+        return jsonify({"error": "not found"}), 404
+
+    # 409 - không thể xóa order đã shipped/delivered
+    if order["status"] in ("shipped", "delivered"):
+        return jsonify({"error": "cannot delete"}), 409
+
+    # Xóa order
+    ORDERS.pop(order_id)
+
+    # 204 - xóa thành công, không có body
+    return "", 204
+
+
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5000, debug=True)
