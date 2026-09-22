@@ -11,6 +11,8 @@ BOOKS = [
     {"id": 3, "title": "Python Basics", "author": "John Smith"},
 ]
 
+next_book_id = 4
+
 
 @app.route("/")
 def index():
@@ -50,7 +52,7 @@ def create_student():
     return jsonify(student), 201
 
 
-# Bài 4 - Path parameter
+# Bài 4 + Bài 6 - GET book theo ID
 @app.route("/books/<int:book_id>", methods=["GET"])
 def get_book(book_id):
     book = next((b for b in BOOKS if b["id"] == book_id), None)
@@ -61,7 +63,7 @@ def get_book(book_id):
     return jsonify(book), 200
 
 
-# Bài 4 - Query string
+# Bài 4 + Bài 6 - GET danh sách books
 @app.route("/books", methods=["GET"])
 def list_books():
     limit = int(request.args.get("limit", 20))
@@ -70,6 +72,67 @@ def list_books():
     items = [b for b in BOOKS if q in b["title"].lower()]
 
     return jsonify(items[:limit]), 200
+
+
+# Bài 6 - POST tạo book
+@app.route("/books", methods=["POST"])
+def create_book():
+    global next_book_id
+
+    body = request.get_json(silent=True) or {}
+
+    title = body.get("title")
+    author = body.get("author")
+
+    # 400 - thiếu title hoặc author
+    if not title or not author:
+        return jsonify({"error": "title+author required"}), 400
+
+    book = {
+        "id": next_book_id,
+        "title": title,
+        "author": author
+    }
+
+    BOOKS.append(book)
+    next_book_id += 1
+
+    # 201 - tạo thành công
+    return jsonify(book), 201, {
+        "Location": f"/books/{book['id']}"
+    }
+
+
+# Bài 6 - PUT + DELETE book
+@app.route("/books/<int:book_id>", methods=["PUT", "DELETE"])
+def modify_book(book_id):
+    book = next((b for b in BOOKS if b["id"] == book_id), None)
+
+    # 404 - không tìm thấy book
+    if book is None:
+        return jsonify({"error": "not found"}), 404
+
+    # PUT - cập nhật book
+    if request.method == "PUT":
+        body = request.get_json(silent=True) or {}
+
+        title = body.get("title")
+        author = body.get("author")
+
+        if title is not None:
+            book["title"] = title
+
+        if author is not None:
+            book["author"] = author
+
+        # 200 - update thành công
+        return jsonify(book), 200
+
+    # DELETE - xóa book
+    BOOKS.remove(book)
+
+    # 204 - xóa thành công, không có body
+    return "", 204
 
 
 # Bài 5 - HTTP Status Codes
