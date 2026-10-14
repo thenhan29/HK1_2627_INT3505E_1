@@ -1,0 +1,96 @@
+books:
+  get:
+    tags:
+      - Books
+    summary: Lấy danh sách sách
+    operationId: listBooks
+    responses:
+      '200':
+        description: Lấy danh sách thành công.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookList'
+            example:
+              data:
+                - id: 1
+                  title: Clean Code
+                  author: Robert C. Martin
+                  published_year: 2008
+              total: 1
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  post:
+    tags:
+      - Books
+    summary: Tạo sách mới
+    operationId: createBook
+    requestBody:
+      $ref: '#/components/requestBodies/BookCreate'
+    responses:
+      '201':
+        description: Tạo sách thành công.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '415':
+        $ref: '#/components/responses/UnsupportedMediaType'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+book_by_id:
+  parameters:
+    - $ref: '#/components/parameters/BookId'
+  get:
+    tags:
+      - Books
+    summary: Lấy thông tin một cuốn sách
+    operationId: getBook
+    responses:
+      '200':
+        description: Tìm thấy sách.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  put:
+    tags:
+      - Books
+    summary: Thay thế thông tin có thể chỉnh sửa của sách
+    description: PUT yêu cầu title, author và published_year.
+    operationId: updateBook
+    requestBody:
+      $ref: '#/components/requestBodies/BookUpdate'
+    responses:
+      '200':
+        description: Cập nhật thành công.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '415':
+        $ref: '#/components/responses/UnsupportedMediaType'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  delete:
+    tags:
+      - Books
+    summary: Xóa sách
+    operationId: deleteBook
+    responses:
+      '204':
+        description: Xóa thành công; response không có nội dung.
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'

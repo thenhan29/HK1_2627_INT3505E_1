@@ -1,0 +1,660 @@
+openapi: 3.0.3
+info:
+  title: Library Management API
+  version: 1.1.0
+  description: |
+    API quản lý sách, tác giả và phiếu mượn. Đặc tả phản ánh các endpoint hiện có của backend Flask. Backend hiện chưa triển khai xác thực hoặc phân quyền.
+servers:
+  - url: http://127.0.0.1:5000
+    description: Máy chủ phát triển cục bộ; thay bằng URL triển khai khi phát hành.
+security: []
+tags:
+  - name: System
+    description: Thông tin chung của API.
+  - name: Books
+    description: Các thao tác quản lý sách.
+  - name: Authors
+    description: Các thao tác quản lý tác giả.
+  - name: Borrows
+    description: Các thao tác quản lý phiếu mượn.
+paths:
+  /:
+    get:
+      tags:
+        - System
+      summary: Kiểm tra API
+      operationId: getApiInfo
+      responses:
+        '200':
+          description: API đang phản hồi.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiInfo'
+              example:
+                message: Book Management API
+                books_endpoint: /books
+  /books:
+    get:
+      tags:
+        - Books
+      summary: Lấy danh sách sách
+      operationId: listBooks
+      responses:
+        '200':
+          description: Lấy danh sách thành công.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookList'
+              example:
+                data:
+                  - id: 1
+                    title: Clean Code
+                    author: Robert C. Martin
+                    published_year: 2008
+                total: 1
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - Books
+      summary: Tạo sách mới
+      operationId: createBook
+      requestBody:
+        $ref: '#/components/requestBodies/BookCreate'
+      responses:
+        '201':
+          description: Tạo sách thành công.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /books/{id}:
+    parameters:
+      - $ref: '#/components/parameters/BookId'
+    get:
+      tags:
+        - Books
+      summary: Lấy thông tin một cuốn sách
+      operationId: getBook
+      responses:
+        '200':
+          description: Tìm thấy sách.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Books
+      summary: Thay thế thông tin có thể chỉnh sửa của sách
+      description: PUT yêu cầu title, author và published_year.
+      operationId: updateBook
+      requestBody:
+        $ref: '#/components/requestBodies/BookUpdate'
+      responses:
+        '200':
+          description: Cập nhật thành công.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Books
+      summary: Xóa sách
+      operationId: deleteBook
+      responses:
+        '204':
+          description: Xóa thành công; response không có nội dung.
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /authors:
+    get:
+      tags:
+        - Authors
+      summary: Lấy danh sách tác giả
+      operationId: listAuthors
+      responses:
+        '200':
+          description: Lấy danh sách thành công.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorList'
+              example:
+                data:
+                  - id: 1
+                    name: Ursula K. Le Guin
+                    bio: Nhà văn người Mỹ.
+                total: 1
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - Authors
+      summary: Tạo tác giả
+      operationId: createAuthor
+      requestBody:
+        $ref: '#/components/requestBodies/AuthorWrite'
+      responses:
+        '201':
+          description: Tạo tác giả thành công.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /authors/{author_id}:
+    parameters:
+      - $ref: '#/components/parameters/AuthorId'
+    get:
+      tags:
+        - Authors
+      summary: Lấy thông tin tác giả
+      operationId: getAuthor
+      responses:
+        '200':
+          description: Tìm thấy tác giả.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '404':
+          $ref: '#/components/responses/AuthorNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Authors
+      summary: Thay thế thông tin tác giả
+      operationId: updateAuthor
+      requestBody:
+        $ref: '#/components/requestBodies/AuthorWrite'
+      responses:
+        '200':
+          description: Cập nhật tác giả thành công.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/AuthorNotFound'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Authors
+      summary: Xóa tác giả
+      operationId: deleteAuthor
+      responses:
+        '204':
+          description: Xóa thành công; response không có nội dung.
+        '404':
+          $ref: '#/components/responses/AuthorNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /borrows:
+    get:
+      tags:
+        - Borrows
+      summary: Lấy danh sách phiếu mượn
+      operationId: listBorrows
+      responses:
+        '200':
+          description: Lấy danh sách thành công.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BorrowList'
+              example:
+                data:
+                  - id: 1
+                    book_id: 1
+                    borrower: Nguyen Van A
+                    status: borrowed
+                    borrow_date: '2026-10-11T09:00:00Z'
+                total: 1
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - Borrows
+      summary: Tạo phiếu mượn
+      operationId: createBorrow
+      requestBody:
+        $ref: '#/components/requestBodies/BorrowWrite'
+      responses:
+        '201':
+          description: Tạo phiếu mượn thành công.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Borrow'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /borrows/{borrow_id}:
+    parameters:
+      - $ref: '#/components/parameters/BorrowId'
+    get:
+      tags:
+        - Borrows
+      summary: Lấy thông tin phiếu mượn
+      operationId: getBorrow
+      responses:
+        '200':
+          description: Tìm thấy phiếu mượn.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Borrow'
+        '404':
+          $ref: '#/components/responses/BorrowNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Borrows
+      summary: Thay thế thông tin phiếu mượn
+      operationId: updateBorrow
+      requestBody:
+        $ref: '#/components/requestBodies/BorrowWrite'
+      responses:
+        '200':
+          description: Cập nhật phiếu mượn thành công.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Borrow'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/BorrowNotFound'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Borrows
+      summary: Xóa phiếu mượn
+      operationId: deleteBorrow
+      responses:
+        '204':
+          description: Xóa thành công; response không có nội dung.
+        '404':
+          $ref: '#/components/responses/BorrowNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+components:
+  parameters:
+    BookId:
+      name: id
+      in: path
+      required: true
+      description: ID của sách cần thao tác.
+      schema:
+        type: integer
+        minimum: 1
+      example: 1
+    AuthorId:
+      name: author_id
+      in: path
+      required: true
+      description: ID của tác giả cần thao tác.
+      schema:
+        type: integer
+        minimum: 1
+      example: 1
+    BorrowId:
+      name: borrow_id
+      in: path
+      required: true
+      description: ID của phiếu mượn cần thao tác.
+      schema:
+        type: integer
+        minimum: 1
+      example: 1
+  requestBodies:
+    BookCreate:
+      required: true
+      description: Thông tin sách mới; ID do máy chủ tự cấp.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BookCreate'
+          example:
+            title: Clean Code
+            author: Robert C. Martin
+            published_year: 2008
+    BookUpdate:
+      required: true
+      description: Thông tin thay thế; cần gửi đủ các trường có thể chỉnh sửa.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BookUpdate'
+          example:
+            title: Clean Code - Second Edition
+            author: Robert C. Martin
+            published_year: 2009
+    AuthorWrite:
+      required: true
+      description: Thông tin tác giả; ID do máy chủ tự cấp.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AuthorWrite'
+          example:
+            name: Ursula K. Le Guin
+            bio: Nhà văn người Mỹ.
+    BorrowWrite:
+      required: true
+      description: Thông tin phiếu mượn; ID do máy chủ tự cấp.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BorrowWrite'
+          example:
+            book_id: 1
+            borrower: Nguyen Van A
+            status: borrowed
+            borrow_date: '2026-10-11T09:00:00Z'
+  responses:
+    BadRequest:
+      description: Request body không hợp lệ hoặc thiếu trường bắt buộc.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: 'Thiếu các trường bắt buộc: title, author, published_year'
+    UnsupportedMediaType:
+      description: Content-Type không phải application/json.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Content-Type phải là application/json
+    NotFound:
+      description: Không tìm thấy sách theo ID đã cung cấp.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Book not found
+    AuthorNotFound:
+      description: Không tìm thấy tác giả theo ID đã cung cấp.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Author not found
+    BorrowNotFound:
+      description: Không tìm thấy phiếu mượn theo ID đã cung cấp.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Borrow record not found
+    InternalServerError:
+      description: |
+        Lỗi ngoài dự kiến từ máy chủ. Backend hiện chưa đảm bảo định dạng response body cho lỗi này.
+  schemas:
+    ApiInfo:
+      type: object
+      required:
+        - message
+        - books_endpoint
+      properties:
+        message:
+          type: string
+          example: Book Management API
+        books_endpoint:
+          type: string
+          example: /books
+    Book:
+      type: object
+      required:
+        - id
+        - title
+        - author
+        - published_year
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          minimum: 1
+          example: 1
+        title:
+          type: string
+          minLength: 1
+          example: Clean Code
+        author:
+          type: string
+          minLength: 1
+          example: Robert C. Martin
+        published_year:
+          type: integer
+          minimum: 0
+          example: 2008
+      additionalProperties: false
+    BookCreate:
+      type: object
+      description: Trường không khai báo được backend bỏ qua.
+      required:
+        - title
+        - author
+        - published_year
+      properties:
+        title:
+          type: string
+          minLength: 1
+          example: Clean Code
+        author:
+          type: string
+          minLength: 1
+          example: Robert C. Martin
+        published_year:
+          type: integer
+          minimum: 0
+          example: 2008
+    BookUpdate:
+      type: object
+      description: PUT yêu cầu đủ các trường; trường không khai báo được backend bỏ qua.
+      required:
+        - title
+        - author
+        - published_year
+      properties:
+        title:
+          type: string
+          minLength: 1
+          example: Clean Code - Second Edition
+        author:
+          type: string
+          minLength: 1
+          example: Robert C. Martin
+        published_year:
+          type: integer
+          minimum: 0
+          example: 2009
+    BookList:
+      type: object
+      required:
+        - data
+        - total
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Book'
+        total:
+          type: integer
+          minimum: 0
+          example: 1
+    Author:
+      type: object
+      required:
+        - id
+        - name
+        - bio
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          minimum: 1
+          example: 1
+        name:
+          type: string
+          minLength: 1
+          example: Ursula K. Le Guin
+        bio:
+          type: string
+          example: Nhà văn người Mỹ.
+      additionalProperties: false
+    AuthorWrite:
+      type: object
+      description: Bio không bắt buộc; bỏ qua hoặc gửi null sẽ lưu chuỗi rỗng.
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          example: Ursula K. Le Guin
+        bio:
+          type: string
+          nullable: true
+          example: Nhà văn người Mỹ.
+    AuthorList:
+      type: object
+      required:
+        - data
+        - total
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Author'
+        total:
+          type: integer
+          minimum: 0
+          example: 1
+    Borrow:
+      type: object
+      required:
+        - id
+        - book_id
+        - borrower
+        - status
+        - borrow_date
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          minimum: 1
+          example: 1
+        book_id:
+          type: integer
+          minimum: 1
+          example: 1
+        borrower:
+          type: string
+          minLength: 1
+          example: Nguyen Van A
+        status:
+          type: string
+          description: Mặc định borrowed nếu client bỏ qua hoặc gửi null.
+          example: borrowed
+        borrow_date:
+          type: string
+          format: date-time
+          nullable: true
+          description: Thời điểm mượn theo RFC 3339.
+          example: '2026-10-11T09:00:00Z'
+      additionalProperties: false
+    BorrowWrite:
+      type: object
+      description: Status mặc định borrowed; borrow_date có thể bỏ qua hoặc gửi null.
+      required:
+        - book_id
+        - borrower
+      properties:
+        book_id:
+          type: integer
+          minimum: 1
+          example: 1
+        borrower:
+          type: string
+          minLength: 1
+          example: Nguyen Van A
+        status:
+          type: string
+          nullable: true
+          example: borrowed
+        borrow_date:
+          type: string
+          format: date-time
+          nullable: true
+          example: '2026-10-11T09:00:00Z'
+    BorrowList:
+      type: object
+      required:
+        - data
+        - total
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Borrow'
+        total:
+          type: integer
+          minimum: 0
+          example: 1
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          example: Book not found

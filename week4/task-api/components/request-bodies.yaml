@@ -1,0 +1,44 @@
+BookCreate:
+  required: true
+  description: Thông tin sách mới; ID do máy chủ tự cấp.
+  content:
+    application/json:
+      schema:
+        $ref: '#/components/schemas/BookCreate'
+      example:
+        title: Clean Code
+        author: Robert C. Martin
+        published_year: 2008
+BookUpdate:
+  required: true
+  description: Thông tin thay thế; cần gửi đủ các trường có thể chỉnh sửa.
+  content:
+    application/json:
+      schema:
+        $ref: '#/components/schemas/BookUpdate'
+      example:
+        title: Clean Code - Second Edition
+        author: Robert C. Martin
+        published_year: 2009
+AuthorWrite:
+  required: true
+  description: Thông tin tác giả; ID do máy chủ tự cấp.
+  content:
+    application/json:
+      schema:
+        $ref: '#/components/schemas/AuthorWrite'
+      example:
+        name: Ursula K. Le Guin
+        bio: Nhà văn người Mỹ.
+BorrowWrite:
+  required: true
+  description: Thông tin phiếu mượn; ID do máy chủ tự cấp.
+  content:
+    application/json:
+      schema:
+        $ref: '#/components/schemas/BorrowWrite'
+      example:
+        book_id: 1
+        borrower: Nguyen Van A
+        status: borrowed
+        borrow_date: '2026-10-11T09:00:00Z'

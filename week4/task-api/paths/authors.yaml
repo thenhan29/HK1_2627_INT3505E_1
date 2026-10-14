@@ -1,0 +1,94 @@
+authors:
+  get:
+    tags:
+      - Authors
+    summary: Lấy danh sách tác giả
+    operationId: listAuthors
+    responses:
+      '200':
+        description: Lấy danh sách thành công.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorList'
+            example:
+              data:
+                - id: 1
+                  name: Ursula K. Le Guin
+                  bio: Nhà văn người Mỹ.
+              total: 1
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  post:
+    tags:
+      - Authors
+    summary: Tạo tác giả
+    operationId: createAuthor
+    requestBody:
+      $ref: '#/components/requestBodies/AuthorWrite'
+    responses:
+      '201':
+        description: Tạo tác giả thành công.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Author'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '415':
+        $ref: '#/components/responses/UnsupportedMediaType'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+author_by_id:
+  parameters:
+    - $ref: '#/components/parameters/AuthorId'
+  get:
+    tags:
+      - Authors
+    summary: Lấy thông tin tác giả
+    operationId: getAuthor
+    responses:
+      '200':
+        description: Tìm thấy tác giả.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Author'
+      '404':
+        $ref: '#/components/responses/AuthorNotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  put:
+    tags:
+      - Authors
+    summary: Thay thế thông tin tác giả
+    operationId: updateAuthor
+    requestBody:
+      $ref: '#/components/requestBodies/AuthorWrite'
+    responses:
+      '200':
+        description: Cập nhật tác giả thành công.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Author'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '404':
+        $ref: '#/components/responses/AuthorNotFound'
+      '415':
+        $ref: '#/components/responses/UnsupportedMediaType'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  delete:
+    tags:
+      - Authors
+    summary: Xóa tác giả
+    operationId: deleteAuthor
+    responses:
+      '204':
+        description: Xóa thành công; response không có nội dung.
+      '404':
+        $ref: '#/components/responses/AuthorNotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'

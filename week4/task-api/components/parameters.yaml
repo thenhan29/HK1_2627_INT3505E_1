@@ -1,0 +1,27 @@
+BookId:
+  name: id
+  in: path
+  required: true
+  description: ID của sách cần thao tác.
+  schema:
+    type: integer
+    minimum: 1
+  example: 1
+AuthorId:
+  name: author_id
+  in: path
+  required: true
+  description: ID của tác giả cần thao tác.
+  schema:
+    type: integer
+    minimum: 1
+  example: 1
+BorrowId:
+  name: borrow_id
+  in: path
+  required: true
+  description: ID của phiếu mượn cần thao tác.
+  schema:
+    type: integer
+    minimum: 1
+  example: 1

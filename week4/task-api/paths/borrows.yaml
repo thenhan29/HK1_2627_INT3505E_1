@@ -1,0 +1,96 @@
+borrows:
+  get:
+    tags:
+      - Borrows
+    summary: Lấy danh sách phiếu mượn
+    operationId: listBorrows
+    responses:
+      '200':
+        description: Lấy danh sách thành công.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BorrowList'
+            example:
+              data:
+                - id: 1
+                  book_id: 1
+                  borrower: Nguyen Van A
+                  status: borrowed
+                  borrow_date: '2026-10-11T09:00:00Z'
+              total: 1
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  post:
+    tags:
+      - Borrows
+    summary: Tạo phiếu mượn
+    operationId: createBorrow
+    requestBody:
+      $ref: '#/components/requestBodies/BorrowWrite'
+    responses:
+      '201':
+        description: Tạo phiếu mượn thành công.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Borrow'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '415':
+        $ref: '#/components/responses/UnsupportedMediaType'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+borrow_by_id:
+  parameters:
+    - $ref: '#/components/parameters/BorrowId'
+  get:
+    tags:
+      - Borrows
+    summary: Lấy thông tin phiếu mượn
+    operationId: getBorrow
+    responses:
+      '200':
+        description: Tìm thấy phiếu mượn.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Borrow'
+      '404':
+        $ref: '#/components/responses/BorrowNotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  put:
+    tags:
+      - Borrows
+    summary: Thay thế thông tin phiếu mượn
+    operationId: updateBorrow
+    requestBody:
+      $ref: '#/components/requestBodies/BorrowWrite'
+    responses:
+      '200':
+        description: Cập nhật phiếu mượn thành công.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Borrow'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '404':
+        $ref: '#/components/responses/BorrowNotFound'
+      '415':
+        $ref: '#/components/responses/UnsupportedMediaType'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  delete:
+    tags:
+      - Borrows
+    summary: Xóa phiếu mượn
+    operationId: deleteBorrow
+    responses:
+      '204':
+        description: Xóa thành công; response không có nội dung.
+      '404':
+        $ref: '#/components/responses/BorrowNotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'

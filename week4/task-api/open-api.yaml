@@ -1,0 +1,106 @@
+openapi: 3.0.3
+info:
+  title: Library Management API
+  version: 1.1.0
+  description: >
+    API quản lý sách, tác giả và phiếu mượn. Đặc tả phản ánh các endpoint
+    hiện có của backend Flask. Backend hiện chưa triển khai xác thực hoặc
+    phân quyền.
+servers:
+  - url: http://127.0.0.1:5000
+    description: Máy chủ phát triển cục bộ; thay bằng URL triển khai khi phát hành.
+security: []
+tags:
+  - name: System
+    description: Thông tin chung của API.
+  - name: Books
+    description: Các thao tác quản lý sách.
+  - name: Authors
+    description: Các thao tác quản lý tác giả.
+  - name: Borrows
+    description: Các thao tác quản lý phiếu mượn.
+
+paths:
+  /:
+    get:
+      tags: [System]
+      summary: Kiểm tra API
+      operationId: getApiInfo
+      responses:
+        '200':
+          description: API đang phản hồi.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiInfo'
+              example:
+                message: Book Management API
+                books_endpoint: /books
+  /books:
+    $ref: './paths/books.yaml#/books'
+  /books/{id}:
+    $ref: './paths/books.yaml#/book_by_id'
+  /authors:
+    $ref: './paths/authors.yaml#/authors'
+  /authors/{author_id}:
+    $ref: './paths/authors.yaml#/author_by_id'
+  /borrows:
+    $ref: './paths/borrows.yaml#/borrows'
+  /borrows/{borrow_id}:
+    $ref: './paths/borrows.yaml#/borrow_by_id'
+
+components:
+  parameters:
+    BookId:
+      $ref: './components/parameters.yaml#/BookId'
+    AuthorId:
+      $ref: './components/parameters.yaml#/AuthorId'
+    BorrowId:
+      $ref: './components/parameters.yaml#/BorrowId'
+  requestBodies:
+    BookCreate:
+      $ref: './components/request-bodies.yaml#/BookCreate'
+    BookUpdate:
+      $ref: './components/request-bodies.yaml#/BookUpdate'
+    AuthorWrite:
+      $ref: './components/request-bodies.yaml#/AuthorWrite'
+    BorrowWrite:
+      $ref: './components/request-bodies.yaml#/BorrowWrite'
+  responses:
+    BadRequest:
+      $ref: './components/responses.yaml#/BadRequest'
+    UnsupportedMediaType:
+      $ref: './components/responses.yaml#/UnsupportedMediaType'
+    NotFound:
+      $ref: './components/responses.yaml#/NotFound'
+    AuthorNotFound:
+      $ref: './components/responses.yaml#/AuthorNotFound'
+    BorrowNotFound:
+      $ref: './components/responses.yaml#/BorrowNotFound'
+    InternalServerError:
+      $ref: './components/responses.yaml#/InternalServerError'
+  schemas:
+    ApiInfo:
+      $ref: './components/schemas.yaml#/ApiInfo'
+    Book:
+      $ref: './components/schemas.yaml#/Book'
+    BookCreate:
+      $ref: './components/schemas.yaml#/BookCreate'
+    BookUpdate:
+      $ref: './components/schemas.yaml#/BookUpdate'
+    BookList:
+      $ref: './components/schemas.yaml#/BookList'
+    Author:
+      $ref: './components/schemas.yaml#/Author'
+    AuthorWrite:
+      $ref: './components/schemas.yaml#/AuthorWrite'
+    AuthorList:
+      $ref: './components/schemas.yaml#/AuthorList'
+    Borrow:
+      $ref: './components/schemas.yaml#/Borrow'
+    BorrowWrite:
+      $ref: './components/schemas.yaml#/BorrowWrite'
+    BorrowList:
+      $ref: './components/schemas.yaml#/BorrowList'
+    Error:
+      $ref: './components/schemas.yaml#/Error'

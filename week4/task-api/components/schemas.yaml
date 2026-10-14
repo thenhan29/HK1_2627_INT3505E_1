@@ -1,0 +1,219 @@
+ApiInfo:
+  type: object
+  required:
+    - message
+    - books_endpoint
+  properties:
+    message:
+      type: string
+      example: Book Management API
+    books_endpoint:
+      type: string
+      example: /books
+Book:
+  type: object
+  required:
+    - id
+    - title
+    - author
+    - published_year
+  properties:
+    id:
+      type: integer
+      readOnly: true
+      minimum: 1
+      example: 1
+    title:
+      type: string
+      minLength: 1
+      example: Clean Code
+    author:
+      type: string
+      minLength: 1
+      example: Robert C. Martin
+    published_year:
+      type: integer
+      minimum: 0
+      example: 2008
+  additionalProperties: false
+BookCreate:
+  type: object
+  description: Trường không khai báo được backend bỏ qua.
+  required:
+    - title
+    - author
+    - published_year
+  properties:
+    title:
+      type: string
+      minLength: 1
+      example: Clean Code
+    author:
+      type: string
+      minLength: 1
+      example: Robert C. Martin
+    published_year:
+      type: integer
+      minimum: 0
+      example: 2008
+BookUpdate:
+  type: object
+  description: PUT yêu cầu đủ các trường; trường không khai báo được backend bỏ qua.
+  required:
+    - title
+    - author
+    - published_year
+  properties:
+    title:
+      type: string
+      minLength: 1
+      example: Clean Code - Second Edition
+    author:
+      type: string
+      minLength: 1
+      example: Robert C. Martin
+    published_year:
+      type: integer
+      minimum: 0
+      example: 2009
+BookList:
+  type: object
+  required:
+    - data
+    - total
+  properties:
+    data:
+      type: array
+      items:
+        $ref: '#/components/schemas/Book'
+    total:
+      type: integer
+      minimum: 0
+      example: 1
+Author:
+  type: object
+  required:
+    - id
+    - name
+    - bio
+  properties:
+    id:
+      type: integer
+      readOnly: true
+      minimum: 1
+      example: 1
+    name:
+      type: string
+      minLength: 1
+      example: Ursula K. Le Guin
+    bio:
+      type: string
+      example: Nhà văn người Mỹ.
+  additionalProperties: false
+AuthorWrite:
+  type: object
+  description: Bio không bắt buộc; bỏ qua hoặc gửi null sẽ lưu chuỗi rỗng.
+  required:
+    - name
+  properties:
+    name:
+      type: string
+      minLength: 1
+      example: Ursula K. Le Guin
+    bio:
+      type: string
+      nullable: true
+      example: Nhà văn người Mỹ.
+AuthorList:
+  type: object
+  required:
+    - data
+    - total
+  properties:
+    data:
+      type: array
+      items:
+        $ref: '#/components/schemas/Author'
+    total:
+      type: integer
+      minimum: 0
+      example: 1
+Borrow:
+  type: object
+  required:
+    - id
+    - book_id
+    - borrower
+    - status
+    - borrow_date
+  properties:
+    id:
+      type: integer
+      readOnly: true
+      minimum: 1
+      example: 1
+    book_id:
+      type: integer
+      minimum: 1
+      example: 1
+    borrower:
+      type: string
+      minLength: 1
+      example: Nguyen Van A
+    status:
+      type: string
+      description: Mặc định borrowed nếu client bỏ qua hoặc gửi null.
+      example: borrowed
+    borrow_date:
+      type: string
+      format: date-time
+      nullable: true
+      description: Thời điểm mượn theo RFC 3339.
+      example: '2026-10-11T09:00:00Z'
+  additionalProperties: false
+BorrowWrite:
+  type: object
+  description: Status mặc định borrowed; borrow_date có thể bỏ qua hoặc gửi null.
+  required:
+    - book_id
+    - borrower
+  properties:
+    book_id:
+      type: integer
+      minimum: 1
+      example: 1
+    borrower:
+      type: string
+      minLength: 1
+      example: Nguyen Van A
+    status:
+      type: string
+      nullable: true
+      example: borrowed
+    borrow_date:
+      type: string
+      format: date-time
+      nullable: true
+      example: '2026-10-11T09:00:00Z'
+BorrowList:
+  type: object
+  required:
+    - data
+    - total
+  properties:
+    data:
+      type: array
+      items:
+        $ref: '#/components/schemas/Borrow'
+    total:
+      type: integer
+      minimum: 0
+      example: 1
+Error:
+  type: object
+  required:
+    - error
+  properties:
+    error:
+      type: string
+      example: Book not found

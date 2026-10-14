@@ -1,0 +1,43 @@
+BadRequest:
+  description: Request body không hợp lệ hoặc thiếu trường bắt buộc.
+  content:
+    application/json:
+      schema:
+        $ref: '#/components/schemas/Error'
+      example:
+        error: 'Thiếu các trường bắt buộc: title, author, published_year'
+UnsupportedMediaType:
+  description: Content-Type không phải application/json.
+  content:
+    application/json:
+      schema:
+        $ref: '#/components/schemas/Error'
+      example:
+        error: Content-Type phải là application/json
+NotFound:
+  description: Không tìm thấy sách theo ID đã cung cấp.
+  content:
+    application/json:
+      schema:
+        $ref: '#/components/schemas/Error'
+      example:
+        error: Book not found
+AuthorNotFound:
+  description: Không tìm thấy tác giả theo ID đã cung cấp.
+  content:
+    application/json:
+      schema:
+        $ref: '#/components/schemas/Error'
+      example:
+        error: Author not found
+BorrowNotFound:
+  description: Không tìm thấy phiếu mượn theo ID đã cung cấp.
+  content:
+    application/json:
+      schema:
+        $ref: '#/components/schemas/Error'
+      example:
+        error: Borrow record not found
+InternalServerError:
+  description: |
+    Lỗi ngoài dự kiến từ máy chủ. Backend hiện chưa đảm bảo định dạng response body cho lỗi này.
